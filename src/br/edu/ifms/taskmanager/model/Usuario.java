@@ -64,4 +64,10 @@ public class Usuario {
 		this.tarefas = tarefas;
 	}
 
+	@Override
+	public String toString() {
+		return "Usuario [id=" + id + ", email=" + email + ", nome=" + nome + ", senha=" + senha + ", tarefas=" + tarefas
+				+ "]";
+	}
+
 }

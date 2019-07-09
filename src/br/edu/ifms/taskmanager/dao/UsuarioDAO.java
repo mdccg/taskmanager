@@ -34,9 +34,9 @@ public class UsuarioDAO {
 
 		for (Usuario usuarioBD : usuarios) {
 			if (usuarioBD.getId().equals(usuario.getId())) {
-				usuarios.remove(usuarioBD);
-				usuarios.add(usuario);
-
+				usuarioBD.setEmail(usuario.getEmail());
+				usuarioBD.setNome(usuario.getNome());
+				usuarioBD.setSenha(usuario.getSenha());
 				return true;
 			}
 		}
