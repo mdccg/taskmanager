@@ -16,7 +16,7 @@ public class GerenciadorUsuarios {
 	}
 	
 	void gerenciarUsuarios() {
-		Long qtde_usuarios = 0l;
+		Long qtde_usuarios = (long) banco.getUsuarios().size();
 		
 		while (true) {
 			String opcao = input("(A)diciona usuário\n" +
@@ -37,9 +37,11 @@ public class GerenciadorUsuarios {
 				usuario.setNome(nome);
 				usuario.setSenha(senha);
 				
-				if(new UsuarioDAO(banco).adicionaUsuario(usuario))
-					usuario.setId(++qtde_usuarios);
-				else
+				if(new UsuarioDAO(banco).adicionaUsuario(usuario)) {
+					usuario.setId((long) ++qtde_usuarios);
+					print("O usuário foi adicionado com êxito.");
+					
+				} else
 					print("O usuário não foi adicionado.");
 				break;
 				
@@ -81,7 +83,7 @@ public class GerenciadorUsuarios {
 				usuario.setSenha(senha);
 				
 				if(new UsuarioDAO(banco).atualizaUsuario(usuario))
-					print("Usuário atualizado com êxito.");
+					print("O Usuário foi atualizado com êxito.");
 				else
 					print("O usuário não foi atualizado.");
 				break;
@@ -97,7 +99,7 @@ public class GerenciadorUsuarios {
 				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
 				
 				if(new UsuarioDAO(banco).deletaUsuario(usuario))
-					print("Usuário deletado com êxito.");
+					print("O usuário foi deletado com êxito.");
 				else
 					print("O usuário não foi deletado.");
 				break;

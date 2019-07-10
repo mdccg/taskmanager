@@ -8,6 +8,8 @@ import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.*;
 
 public class GerenciadorCategorias {
+	public static final int INF = 1 << 29;
+	
 	Banco banco;
 	
 	public GerenciadorCategorias(Banco banco) {
@@ -15,7 +17,7 @@ public class GerenciadorCategorias {
 	}
 	
 	void gerenciarCategorias (Usuario usuario) {
-		Long qtde_categorias = 0l;
+		Long qtde_categorias = (long) banco.getCategorias().size();
 		
 		while (true) {
 			String opcao = input("(A)diciona categoria\n" +
@@ -32,8 +34,11 @@ public class GerenciadorCategorias {
 				
 				categoria.setTitulo(titulo);
 				
-				if(new CategoriaDAO(banco).adicionaCategoria(categoria))
+				if(new CategoriaDAO(banco).adicionaCategoria(categoria)) {
 					categoria.setId((long) ++qtde_categorias);
+					print("A categoria foi adicionada com êxito.");
+					
+				}
 				else
 					print("A categoria não foi adicionada.");
 				break;
@@ -43,7 +48,7 @@ public class GerenciadorCategorias {
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
 				} catch(Exception exception) {
-					System.out.println("Categoria inválida."); break;
+					print("Categoria inválida."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
@@ -59,19 +64,21 @@ public class GerenciadorCategorias {
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
 				} catch(Exception exception) {
-					System.out.println("Categoria inválida."); break;
+					print("Categoria inválida."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
 				
-				if(categoria == null)
-					return;
+				if(categoria == null) {
+					print("Categoria inválida.");
+					break;
+				}
 				
 				titulo = input("Título:");
 				categoria.setTitulo(titulo);
 				
 				if(new CategoriaDAO(banco).atualizaCategoria(categoria))
-					print("Categoria atualizada com êxito.");
+					print("A categoria foi atualizada com êxito.");
 				else
 					print("A categoria não foi atualizada.");
 				break;
@@ -81,13 +88,13 @@ public class GerenciadorCategorias {
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
 				} catch(Exception exception) {
-					System.out.println("Categoria inválida."); break;
+					print("Categoria inválida."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
 				
 				if(new CategoriaDAO(banco).deletaCategoria(categoria))
-					print("Categoria deletada com êxito.");
+					print("A categoria foi deletada com êxito.");
 				else
 					print("A categoria não foi deletada.");
 				break;

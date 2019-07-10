@@ -18,16 +18,46 @@ package br.edu.ifms.taskmanager.manager;
 
 import br.edu.ifms.taskmanager.dao.UsuarioDAO;
 import br.edu.ifms.taskmanager.mockBD.Banco;
-import br.edu.ifms.taskmanager.model.Usuario;
+import br.edu.ifms.taskmanager.model.*;
 
-import static br.edu.ifms.taskmanager.manager.Main.input;
-import static br.edu.ifms.taskmanager.manager.Main.print;
-
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 import java.sql.Date;
 
 import javax.swing.JOptionPane;
 
+import com.google.gson.Gson;
+
 public class Main {
+	public static void checkpoint(Banco banco) throws IOException {
+		Gson gson = new Gson();
+		
+		FileWriter fileWriter = new FileWriter("src/br/edu/ifms/taskmanager/mockBD/Categorias.json");
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		
+		for(Categoria categoria : banco.getCategorias())
+			printWriter.printf("%s\n", gson.toJson(categoria));
+		
+		fileWriter.close();
+		
+		fileWriter = new FileWriter("src/br/edu/ifms/taskmanager/mockBD/Tarefas.json");
+		printWriter = new PrintWriter(fileWriter);
+		
+		for(Tarefa tarefa : banco.getTarefas())
+			printWriter.printf("%s\n", gson.toJson(tarefa));
+		
+		fileWriter.close();
+		
+		fileWriter = new FileWriter("src/br/edu/ifms/taskmanager/mockBD/Usuarios.json");
+		printWriter = new PrintWriter(fileWriter);
+		
+		for(Usuario usuario : banco.getUsuarios())
+			printWriter.printf("%s\n", gson.toJson(usuario));
+		
+		fileWriter.close();	
+	}
+	
 	public static Date inputData(String input) {
 		boolean valido = false;
 		Date data = null;
@@ -62,11 +92,11 @@ public class Main {
 		return JOptionPane.showInputDialog(null, "");
 	}
 
-	public static void print(String string) {
+	public static void print(Object string) {
 		JOptionPane.showMessageDialog(null, string);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Banco banco = new Banco();
 		
 		while(true) {
@@ -117,6 +147,10 @@ public class Main {
 				break;
 				
 			case "P":
+				try {
+					checkpoint(banco);
+					
+				} catch(IOException ioException) {}
 				return;
 				
 			default:

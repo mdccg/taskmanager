@@ -46,5 +46,4 @@ public class Categoria {
 	public String toString() {
 		return "Categoria [id=" + id + ", titulo=" + titulo + ", id_tarefas=" + id_tarefas + "]";
 	}
-
 }
