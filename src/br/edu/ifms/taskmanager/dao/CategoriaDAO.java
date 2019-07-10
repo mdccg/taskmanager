@@ -34,8 +34,8 @@ public class CategoriaDAO {
 
 		for (Categoria categoriaBD : categorias) {
 			if (categoriaBD.getId().equals(categoria.getId())) {
-				categorias.remove(categoriaBD);
-				categorias.add(categoria);
+				categoriaBD.setTitulo(categoria.getTitulo());
+				categoriaBD.setId_Tarefas(categoria.getId_Tarefas());
 				return true;
 			}
 		}

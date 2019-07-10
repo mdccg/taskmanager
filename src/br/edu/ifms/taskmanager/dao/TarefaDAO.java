@@ -34,8 +34,10 @@ public class TarefaDAO {
 
 		for (Tarefa tarefaBD : tarefas) {
 			if (tarefaBD.getId().equals(tarefa.getId())) {
-				tarefas.remove(tarefaBD);
-				tarefas.add(tarefa);
+				tarefaBD.setTitulo(tarefa.getTitulo());
+				tarefaBD.setPrioridade(tarefa.getPrioridade());
+				tarefaBD.setDataEdicao(tarefa.getDataEdicao());
+				tarefaBD.setId_Categoria(tarefa.getId_Categoria());
 				return true;
 			}
 		}

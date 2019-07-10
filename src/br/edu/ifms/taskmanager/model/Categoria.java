@@ -1,23 +1,21 @@
 package br.edu.ifms.taskmanager.model;
 
-import br.edu.ifms.taskmanager.model.Tarefa;
-
 import java.util.ArrayList;
 
 public class Categoria {
 	private Long id;
 	private String titulo;
-	private ArrayList<Tarefa> tarefas;
+	private ArrayList<Long> id_tarefas;
 
 	public Categoria() {
-		this.tarefas = new ArrayList<>();
+		this.id_tarefas = new ArrayList<>();
 	}
 
-	public Categoria(Long id, String titulo, ArrayList<Tarefa> tarefas) {
+	public Categoria(Long id, String titulo, ArrayList<Long> id_tarefas) {
 		super();
 		this.id = id;
 		this.titulo = titulo;
-		this.tarefas = tarefas;
+		this.id_tarefas = id_tarefas;
 	}
 
 	public Long getId() {
@@ -36,12 +34,17 @@ public class Categoria {
 		this.titulo = titulo;
 	}
 
-	public ArrayList<Tarefa> getTarefas() {
-		return tarefas;
+	public ArrayList<Long> getId_Tarefas() {
+		return id_tarefas;
 	}
 
-	public void setTarefas(ArrayList<Tarefa> tarefas) {
-		this.tarefas = tarefas;
+	public void setId_Tarefas(ArrayList<Long> id_tarefas) {
+		this.id_tarefas = id_tarefas;
+	}
+
+	@Override
+	public String toString() {
+		return "Categoria [id=" + id + ", titulo=" + titulo + ", id_tarefas=" + id_tarefas + "]";
 	}
 
 }

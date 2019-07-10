@@ -1,18 +1,29 @@
 package br.edu.ifms.taskmanager.manager;
 
+import br.edu.ifms.taskmanager.dao.CategoriaDAO;
 import br.edu.ifms.taskmanager.dao.TarefaDAO;
-import static br.edu.ifms.taskmanager.manager.GerenciadorUsuarios.input;
-import static br.edu.ifms.taskmanager.manager.GerenciadorUsuarios.print;
+
+import static br.edu.ifms.taskmanager.manager.Main.inputData;
+import static br.edu.ifms.taskmanager.manager.Main.input;
+import static br.edu.ifms.taskmanager.manager.Main.print;
+
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.*;
 
 import java.sql.Date;
 
-public class GerenciadorTarefas {
-	public static void main(String[] args) {
-		Banco banco = new Banco();
-		Long qtde_tarefas = 0l;
+import java.util.Calendar;
 
+public class GerenciadorTarefas {
+	Banco banco;
+	
+	public GerenciadorTarefas(Banco banco) {
+		this.banco = banco;
+	}
+	
+	void gerenciarTarefas (Usuario usuario) {
+		Long qtde_tarefas = 0l;
+		
 		while (true) {
 			String opcao = input("(A)diciona tarefa\n" +
 					"(B)usca tarefa por ID\n" +
@@ -25,19 +36,51 @@ public class GerenciadorTarefas {
 				Tarefa tarefa = new Tarefa();
 				
 				String titulo = input("Título:");
-				Date prazo = Date.valueOf(input("Prazo:"));
+				Date prazo = inputData("Prazo: dd/MM/yyyy");
 				String prioridade = input("Prioridade:");
 				
-				// TODO
+				Calendar calendar = Calendar.getInstance();
+				Date dataCriacao = new Date(calendar.getTime().getTime());
+				Date dataEdicao = new Date(calendar.getTime().getTime());
 				
-				if(new TarefaDAO(banco).adicionaTarefa(tarefa))
-					tarefa.setId(++qtde_tarefas);
-				else
+				boolean valido = false;
+				Long id_categoria = null;
+				do {
+					try {
+						id_categoria = Long.valueOf(input("ID da categoria:"));
+						valido = true;
+						
+					} catch(Exception exception) {
+						print("Categoria inválida.");
+					}
+				} while(!valido);
+				
+				tarefa.setTitulo(titulo);
+				tarefa.setPrazo(prazo);
+				tarefa.setPrioridade(prioridade);
+				tarefa.setDataCriacao(dataCriacao);
+				tarefa.setDataEdicao(dataEdicao);
+				tarefa.setId_Categoria(id_categoria);
+				tarefa.setId_Usuario(usuario.getId());
+				usuario.getTarefas().add(tarefa);
+				
+				if(new TarefaDAO(banco).adicionaTarefa(tarefa)) {
+					tarefa.setId((long) ++qtde_tarefas);
+					new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria).getId_Tarefas().add(tarefa.getId());
+
+				} else {
 					print("A tarefa não foi adicionada.");
+				}
 				break;
 				
 			case "B":
-				Long id = Long.valueOf(input("ID do tarefa:"));
+				Long id = null;
+				try {
+					id = Long.valueOf(input("ID da tarefa:"));
+				} catch(Exception exception) {
+					print("Tarefa inválida."); break;
+				}
+				
 				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
 				
 				if(tarefa != null)
@@ -47,13 +90,42 @@ public class GerenciadorTarefas {
 				break;
 				
 			case "AT":
-				id = Long.valueOf(input("ID do tarefa:"));
+				id = null;
+				try {
+					id = Long.valueOf(input("ID da tarefa:"));
+				} catch(Exception exception) {
+					print("Tarefa inválida."); break;
+				}
+				
 				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
 				
 				if(tarefa == null)
 					return;
 				
-				// TODO
+				titulo = input("Título:");
+				prazo = inputData("Prazo: dd/MM/yyyy");
+				prioridade = input("Prioridade:");
+				
+				calendar = Calendar.getInstance();
+				dataEdicao = new Date(calendar.getTime().getTime());
+				
+				valido = false;
+				id_categoria = null;
+				do {
+					try {
+						id_categoria = Long.valueOf(input("ID da categoria:"));
+						valido = true;
+						
+					} catch(Exception exception) {
+						print("Categoria inválida.");
+					}
+				} while(!valido);
+				
+				tarefa.setTitulo(titulo);
+				tarefa.setPrazo(prazo);
+				tarefa.setPrioridade(prioridade);
+				tarefa.setDataEdicao(dataEdicao);
+				tarefa.setId_Categoria(id_categoria); // TODO
 				
 				if(new TarefaDAO(banco).atualizaTarefa(tarefa))
 					print("Tarefa atualizada com êxito.");
@@ -62,7 +134,13 @@ public class GerenciadorTarefas {
 				break;
 				
 			case "D":
-				id = Long.valueOf(input("ID do tarefa:"));
+				id = null;
+				try {
+					id = Long.valueOf(input("ID da tarefa:"));
+				} catch(Exception exception) {
+					print("Tarefa inválida."); break;
+				}
+				
 				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
 				
 				if(new TarefaDAO(banco).deletaTarefa(tarefa))

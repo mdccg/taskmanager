@@ -1,28 +1,23 @@
 package br.edu.ifms.taskmanager.manager;
 
 import br.edu.ifms.taskmanager.dao.UsuarioDAO;
+
+import static br.edu.ifms.taskmanager.manager.Main.input;
+import static br.edu.ifms.taskmanager.manager.Main.print;
+
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Usuario;
 
-import javax.swing.JOptionPane;
-
 public class GerenciadorUsuarios {
-	public static String input(String string) {
-		return JOptionPane.showInputDialog(null, string);
+	Banco banco;
+	
+	public GerenciadorUsuarios(Banco banco) {
+		this.banco = banco;
 	}
-
-	public static String input() {
-		return JOptionPane.showInputDialog(null, "");
-	}
-
-	public static void print(String string) {
-		JOptionPane.showMessageDialog(null, string);
-	}
-
-	public static void main(String[] args) {
-		Banco banco = new Banco();
+	
+	void gerenciarUsuarios() {
 		Long qtde_usuarios = 0l;
-
+		
 		while (true) {
 			String opcao = input("(A)diciona usuário\n" +
 					"(B)usca usuário por ID\n" +
@@ -49,7 +44,13 @@ public class GerenciadorUsuarios {
 				break;
 				
 			case "B":
-				Long id = Long.valueOf(input("ID do usuário:"));
+				Long id = null;
+				try {
+					id = Long.valueOf(input("ID do usuário:"));
+				} catch(Exception exception) {
+					print("Usuário inválido."); break;
+				}
+				
 				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
 				
 				if(usuario != null)
@@ -59,7 +60,13 @@ public class GerenciadorUsuarios {
 				break;
 				
 			case "AT":
-				id = Long.valueOf(input("ID do usuário:"));
+				id = null;
+				try {
+					id = Long.valueOf(input("ID do usuário:"));
+				} catch(Exception exception) {
+					print("Usuário inválido."); break;
+				}
+				
 				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
 				
 				if(usuario == null)
@@ -80,7 +87,13 @@ public class GerenciadorUsuarios {
 				break;
 				
 			case "D":
-				id = Long.valueOf(input("ID do usuário:"));
+				id = null;
+				try {
+					id = Long.valueOf(input("ID do usuário:"));
+				} catch(Exception exception) {
+					print("Usuário inválido."); break;
+				}
+				
 				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
 				
 				if(new UsuarioDAO(banco).deletaUsuario(usuario))

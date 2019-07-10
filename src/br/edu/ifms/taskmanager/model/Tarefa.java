@@ -1,8 +1,5 @@
 package br.edu.ifms.taskmanager.model;
 
-import br.edu.ifms.taskmanager.model.Categoria;
-import br.edu.ifms.taskmanager.model.Usuario;
-
 import java.sql.Date;
 
 public class Tarefa {
@@ -12,14 +9,14 @@ public class Tarefa {
 	private String prioridade;
 	private Date dataCriacao;
 	private Date dataEdicao;
-	private Categoria categoria;
-	private Usuario usuario;
+	private Long id_categoria;
+	private Long id_usuario;
 
 	public Tarefa() {
 	}
 
 	public Tarefa(Long id, String titulo, Date prazo, String prioridade, Date dataCriacao, Date dataEdicao,
-			Categoria categoria, Usuario usuario) {
+			Long id_categoria, Long id_usuario) {
 		super();
 		this.id = id;
 		this.titulo = titulo;
@@ -27,8 +24,8 @@ public class Tarefa {
 		this.prioridade = prioridade;
 		this.dataCriacao = dataCriacao;
 		this.dataEdicao = dataEdicao;
-		this.categoria = categoria;
-		this.usuario = usuario;
+		this.id_categoria = id_categoria;
+		this.id_usuario = id_usuario;
 	}
 
 	public Long getId() {
@@ -79,28 +76,27 @@ public class Tarefa {
 		this.dataEdicao = dataEdicao;
 	}
 
-	public Categoria getCategoria() {
-		return categoria;
+	public Long getId_Categoria() {
+		return id_categoria;
 	}
 
-	public void setCategoria(Categoria categoria) {
-		this.categoria = categoria;
+	public void setId_Categoria(Long id_categoria) {
+		this.id_categoria = id_categoria;
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
+	public Long getId_Usuario() {
+		return id_usuario;
 	}
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+	public void setId_Usuario(Long id_usuario) {
+		this.id_usuario = id_usuario;
 	}
 
 	@Override
 	public String toString() {
 		return "Tarefa [id=" + id + ", titulo=" + titulo + ", prazo=" + prazo + ", prioridade=" + prioridade
-				+ ", dataCriacao=" + dataCriacao + ", dataEdicao=" + dataEdicao + ", categoria=" + categoria
-				+ ", usuario=" + usuario + "]";
+				+ ", dataCriacao=" + dataCriacao + ", dataEdicao=" + dataEdicao + ", id_categoria=" + id_categoria
+				+ ", id_usuario=" + id_usuario + "]";
 	}
-	
-	
+
 }
