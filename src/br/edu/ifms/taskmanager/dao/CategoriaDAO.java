@@ -2,6 +2,7 @@ package br.edu.ifms.taskmanager.dao;
 
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Categoria;
+import br.edu.ifms.taskmanager.model.Usuario;
 
 import java.util.ArrayList;
 
@@ -49,4 +50,13 @@ public class CategoriaDAO {
 		return categorias.remove(categoria);
 	}
 
+	public String listaCategorias() {
+		ArrayList<Categoria> categorias = banco.getCategorias();
+		String string = new String();
+
+		for (Categoria categoria : categorias)
+			string += categoria.toString();
+
+		return string;
+	}
 }

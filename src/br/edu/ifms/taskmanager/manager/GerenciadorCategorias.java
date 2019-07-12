@@ -1,9 +1,10 @@
 package br.edu.ifms.taskmanager.manager;
 
-import static br.edu.ifms.taskmanager.manager.Main.input;
-import static br.edu.ifms.taskmanager.manager.Main.print;
+import static br.edu.ifms.taskmanager.main.Main.input;
+import static br.edu.ifms.taskmanager.main.Main.print;
 
 import br.edu.ifms.taskmanager.dao.CategoriaDAO;
+import br.edu.ifms.taskmanager.dao.TarefaDAO;
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.*;
 
@@ -16,18 +17,23 @@ public class GerenciadorCategorias {
 		this.banco = banco;
 	}
 	
-	void gerenciarCategorias (Usuario usuario) {
+	public void gerenciarCategorias (Usuario usuario) {
 		Long qtde_categorias = (long) banco.getCategorias().size();
 		
 		while (true) {
-			String opcao = input("(A)diciona categoria\n" +
-					"(B)usca categoria por ID\n" +
-					"(AT)ualiza categoria\n" +
-					"(D)eleta categoria\n" +
-					"(s)udo rm -fr /");
+			String opcao = input(
+					"Category Manager v1.97.7\n" +
+					"\n" +
+					usuario.toString() +
+					"[A][d]iciona categoria\n" +
+					"[B]usca categoria por [I][D]\n" +
+					"[L]i[s]ta categorias\n" +
+					"[A][t]ualiza categoria\n" +
+					"[D][e][l]eta categoria\n" +
+					"# [s]udo rm -fr /");
 
 			switch (opcao.toUpperCase()) {
-			case "A":
+			case "AD":
 				Categoria categoria = new Categoria();
 				
 				String titulo = input("Título:");
@@ -43,12 +49,13 @@ public class GerenciadorCategorias {
 					print("A categoria não foi adicionada.");
 				break;
 				
-			case "B":
+			case "BID":
 				Long id = null;
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
+					
 				} catch(Exception exception) {
-					print("Categoria inválida."); break;
+					print("ID inválido."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
@@ -59,22 +66,29 @@ public class GerenciadorCategorias {
 					print("A categoria não foi encontrada.");
 				break;
 				
+			case "LS":
+				if(banco.getCategorias().size() == 0)
+					print("Nenhuma categoria foi encontrada.");
+				else
+					print(new CategoriaDAO(banco).listaCategorias());
+				break;
+				
 			case "AT":
 				id = null;
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
+					
 				} catch(Exception exception) {
-					print("Categoria inválida."); break;
+					print("ID inválido."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
 				
 				if(categoria == null) {
-					print("Categoria inválida.");
-					break;
+					print("Categoria inválida."); break;
 				}
 				
-				titulo = input("Título:");
+				titulo = input("Título:", categoria.getTitulo());
 				categoria.setTitulo(titulo);
 				
 				if(new CategoriaDAO(banco).atualizaCategoria(categoria))
@@ -83,18 +97,26 @@ public class GerenciadorCategorias {
 					print("A categoria não foi atualizada.");
 				break;
 				
-			case "D":
+			case "DEL":
 				id = null;
 				try {
 					id = Long.valueOf(input("ID da categoria:"));
+				
 				} catch(Exception exception) {
-					print("Categoria inválida."); break;
+					print("ID inválido."); break;
 				}
 				
 				categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id);
 				
-				if(new CategoriaDAO(banco).deletaCategoria(categoria))
-					print("A categoria foi deletada com êxito.");
+				if(categoria == null) {
+					print("Categoria inválida."); break;
+				}
+				
+				String string = input(categoria.toString() + "Excluir esta categoria? [Y/n]");
+				
+				if(string.equals("") || string.toUpperCase().equals("Y"))
+					if(new CategoriaDAO(banco).deletaCategoria(categoria))
+						print("A categoria foi deletada com êxito.");
 				else
 					print("A categoria não foi deletada.");
 				break;

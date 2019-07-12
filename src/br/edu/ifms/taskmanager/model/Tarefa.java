@@ -94,9 +94,15 @@ public class Tarefa {
 
 	@Override
 	public String toString() {
-		return "Tarefa [id=" + id + ", titulo=" + titulo + ", prazo=" + prazo + ", prioridade=" + prioridade
-				+ ", dataCriacao=" + dataCriacao + ", dataEdicao=" + dataEdicao + ", id_categoria=" + id_categoria
-				+ ", id_usuario=" + id_usuario + "]";
+		return "ID: " + id + "\n" +
+				"Título: " + titulo + "\n" +
+				"Prazo: " + prazo + "\n" +
+				"Prioridade: " + prioridade + "\n" +
+				"Data de criação: " + dataCriacao + "\n" +
+				"Data de edição: " + dataEdicao + "\n" +
+				"ID da categoria: " + id_categoria + "\n" +
+				"ID do usuário: " + id_usuario + "\n" +
+				"\n";
 	}
 
 }

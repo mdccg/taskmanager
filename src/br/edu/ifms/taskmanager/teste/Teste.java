@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.swing.JOptionPane;
+
 class Pessoa {
 	private String nome;
 	private Integer idade;
@@ -68,15 +70,9 @@ public class Teste {
 		
 		fileWriter.close();
 	}
-	public static void main(String[] args) {
-		try {
-			paraJSON();
-			
-		} catch(IOException e) {}
-		
-		try {
-			paraObjeto();
-		
-		} catch(IOException e) {}
+	public static void main(String[] args) throws IOException {
+		/*paraJSON();
+		paraObjeto();*/
+		String string = JOptionPane.showInputDialog("Seu CPF:", "123.456.789-01");
 	}
 }

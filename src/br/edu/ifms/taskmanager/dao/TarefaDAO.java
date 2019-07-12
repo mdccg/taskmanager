@@ -2,6 +2,7 @@ package br.edu.ifms.taskmanager.dao;
 
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.model.Usuario;
 
 import java.util.ArrayList;
 
@@ -51,4 +52,13 @@ public class TarefaDAO {
 		return tarefas.remove(tarefa);
 	}
 
+	public String listaTarefas() {
+		ArrayList<Tarefa> tarefas = banco.getTarefas();
+		String string = new String();
+
+		for (Tarefa tarefa : tarefas)
+			string += tarefa.toString();
+
+		return string;
+	}
 }

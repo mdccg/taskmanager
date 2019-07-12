@@ -28,7 +28,7 @@ public class UsuarioDAO {
 
 		return null;
 	}
-
+	
 	public boolean atualizaUsuario(Usuario usuario) {
 		ArrayList<Usuario> usuarios = banco.getUsuarios();
 
@@ -48,6 +48,26 @@ public class UsuarioDAO {
 		ArrayList<Usuario> usuarios = banco.getUsuarios();
 
 		return usuarios.remove(usuario);
+	}
+	
+	public Usuario buscaUsuarioPorEmail(String email) {
+		ArrayList<Usuario> usuarios = banco.getUsuarios();
+		
+		for (Usuario usuario : usuarios)
+			if (usuario.getEmail().equals(email))
+				return usuario;
+
+		return null;
+	}
+	
+	public String listaUsuarios() {
+		ArrayList<Usuario> usuarios = banco.getUsuarios();
+		String string = new String();
+		
+		for(Usuario usuario : usuarios)
+			string += usuario.toString();
+		
+		return string;
 	}
 
 }
