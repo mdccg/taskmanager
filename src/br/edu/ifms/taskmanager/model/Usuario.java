@@ -1,7 +1,5 @@
 package br.edu.ifms.taskmanager.model;
 
-import br.edu.ifms.taskmanager.model.Tarefa;
-
 import java.util.ArrayList;
 
 public class Usuario {

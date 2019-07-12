@@ -4,15 +4,15 @@ import static br.edu.ifms.taskmanager.main.Main.input;
 import static br.edu.ifms.taskmanager.main.Main.inputData;
 import static br.edu.ifms.taskmanager.main.Main.print;
 
-import br.edu.ifms.taskmanager.dao.CategoriaDAO;
-import br.edu.ifms.taskmanager.dao.TarefaDAO;
-import br.edu.ifms.taskmanager.dao.UsuarioDAO;
-import br.edu.ifms.taskmanager.mockBD.Banco;
-import br.edu.ifms.taskmanager.model.*;
-
+import java.sql.Date;
 import java.util.Calendar;
 
-import java.sql.Date;
+import br.edu.ifms.taskmanager.dao.CategoriaDAO;
+import br.edu.ifms.taskmanager.dao.TarefaDAO;
+import br.edu.ifms.taskmanager.mockBD.Banco;
+import br.edu.ifms.taskmanager.model.Categoria;
+import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.model.Usuario;
 
 public class GerenciadorTarefas {
 	Banco banco;

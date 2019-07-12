@@ -1,14 +1,15 @@
 package br.edu.ifms.taskmanager.mockBD;
 
-import br.edu.ifms.taskmanager.model.*;
-
-import java.util.Scanner;
-import java.util.ArrayList;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.google.gson.Gson;
+
+import br.edu.ifms.taskmanager.model.Categoria;
+import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.model.Usuario;
 
 public class Banco {
 	private ArrayList<Categoria> categorias;

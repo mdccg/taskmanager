@@ -1,10 +1,9 @@
 package br.edu.ifms.taskmanager.dao;
 
+import java.util.ArrayList;
+
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Categoria;
-import br.edu.ifms.taskmanager.model.Usuario;
-
-import java.util.ArrayList;
 
 public class CategoriaDAO {
 	Banco banco;
@@ -16,7 +15,10 @@ public class CategoriaDAO {
 
 	public boolean adicionaCategoria(Categoria categoria) {
 		ArrayList<Categoria> categorias = banco.getCategorias();
-
+		
+		if(this.buscaCategoriaPorTitulo(categoria.getTitulo()) != null)
+			return false;
+		
 		return categorias.add(categoria);
 	}
 
@@ -31,6 +33,9 @@ public class CategoriaDAO {
 	}
 
 	public boolean atualizaCategoria(Categoria categoria) {
+		if(categoria.getTitulo().equals(""))
+			return false;
+		
 		ArrayList<Categoria> categorias = banco.getCategorias();
 
 		for (Categoria categoriaBD : categorias) {
@@ -50,6 +55,16 @@ public class CategoriaDAO {
 		return categorias.remove(categoria);
 	}
 
+	public Categoria buscaCategoriaPorTitulo(String titulo) {
+		ArrayList<Categoria> categorias = banco.getCategorias();
+		
+		for(Categoria categoria : categorias)
+			if(categoria.getTitulo().equals(titulo))
+				return categoria;
+		
+		return null;
+	}
+	
 	public String listaCategorias() {
 		ArrayList<Categoria> categorias = banco.getCategorias();
 		String string = new String();
@@ -59,4 +74,5 @@ public class CategoriaDAO {
 
 		return string;
 	}
+	
 }

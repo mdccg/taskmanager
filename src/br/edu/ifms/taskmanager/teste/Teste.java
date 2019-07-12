@@ -1,15 +1,14 @@
 package br.edu.ifms.taskmanager.teste;
 
-import com.google.gson.Gson;
-
-import java.util.Scanner;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
+
+import com.google.gson.Gson;
 
 class Pessoa {
 	private String nome;

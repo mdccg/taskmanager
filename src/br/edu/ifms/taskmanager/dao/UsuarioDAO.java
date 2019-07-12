@@ -1,9 +1,9 @@
 package br.edu.ifms.taskmanager.dao;
 
+import java.util.ArrayList;
+
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Usuario;
-
-import java.util.ArrayList;
 
 public class UsuarioDAO {
 	Banco banco;
@@ -15,7 +15,10 @@ public class UsuarioDAO {
 
 	public boolean adicionaUsuario(Usuario usuario) {
 		ArrayList<Usuario> usuarios = banco.getUsuarios();
-
+		
+		if(this.buscaUsuarioPorEmail(usuario.getEmail()) != null)
+			return false;
+		
 		return usuarios.add(usuario);
 	}
 
@@ -30,8 +33,13 @@ public class UsuarioDAO {
 	}
 	
 	public boolean atualizaUsuario(Usuario usuario) {
+		if(usuario.getNome().equals("") ||
+				usuario.getEmail().equals("") ||
+				usuario.getSenha().equals(""))
+			return false;
+		
 		ArrayList<Usuario> usuarios = banco.getUsuarios();
-
+		
 		for (Usuario usuarioBD : usuarios) {
 			if (usuarioBD.getId().equals(usuario.getId())) {
 				usuarioBD.setEmail(usuario.getEmail());

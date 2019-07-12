@@ -16,6 +16,13 @@
 
 package br.edu.ifms.taskmanager.main;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Date;
+
+import javax.swing.JOptionPane;
+
 import com.google.gson.Gson;
 
 import br.edu.ifms.taskmanager.dao.UsuarioDAO;
@@ -23,15 +30,9 @@ import br.edu.ifms.taskmanager.manager.GerenciadorCategorias;
 import br.edu.ifms.taskmanager.manager.GerenciadorTarefas;
 import br.edu.ifms.taskmanager.manager.GerenciadorUsuarios;
 import br.edu.ifms.taskmanager.mockBD.Banco;
-import br.edu.ifms.taskmanager.model.*;
-
-import java.sql.Date;
-
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
-
-import javax.swing.JOptionPane;
+import br.edu.ifms.taskmanager.model.Categoria;
+import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.model.Usuario;
 
 public class Main {
 	public static void checkpoint(Banco banco) throws IOException {
