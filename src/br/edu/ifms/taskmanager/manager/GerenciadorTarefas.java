@@ -1,7 +1,7 @@
 package br.edu.ifms.taskmanager.manager;
 
 import static br.edu.ifms.taskmanager.main.Main.input;
-import static br.edu.ifms.taskmanager.main.Main.inputData;
+import static br.edu.ifms.taskmanager.main.Main.inputDate;
 import static br.edu.ifms.taskmanager.main.Main.print;
 
 import java.sql.Date;
@@ -16,183 +16,128 @@ import br.edu.ifms.taskmanager.model.Usuario;
 
 public class GerenciadorTarefas {
 	Banco banco;
+	Long qtde_tarefas;
+	TarefaDAO tarefaDAO;
 
 	public GerenciadorTarefas(Banco banco) {
 		this.banco = banco;
+		qtde_tarefas = (long) banco.getTarefas().size();
+		tarefaDAO = new TarefaDAO(banco);
 	}
 
 	public void gerenciarTarefas(Usuario usuario) {
-		Long qtde_tarefas = (long) banco.getTarefas().size();
-
 		while (true) {
-			String opcao = input(
-					"Task Manager v1.66.4\n" +
-					"\n" +
-					usuario.toString() +
-					"[A][d]iciona tarefa\n" +
-					"[B]usca tarefa por [I][D]\n" +
-					"[L]i[s]ta tarefas\n" +
-					"[A][t]ualiza tarefa\n" +
-					"[D][e][l]eta tarefa\n" +
-					"# [s]udo rm -fr /");
+			String opcao = input("Task Manager v1.66.4\n" + "\n" + usuario.toString() + "[A][d]iciona tarefa\n"
+					+ "[B]usca tarefa por [I][D]\n" + "[L]i[s]ta tarefas\n" + "[A][t]ualiza tarefa\n"
+					+ "[D][e][l]eta tarefa\n" + "# [s]udo rm -fr /");
 
 			switch (opcao.toUpperCase()) {
 			case "AD":
-				Tarefa tarefa = new Tarefa();
-
 				String titulo = input("Título:");
-				Date prazo = inputData("Prazo: dd/MM/yyyy");
+				Date prazo = inputDate("Prazo: dd/MM/yyyy");
 				String prioridade = input("Prioridade:");
 
-				Calendar calendar = Calendar.getInstance();
-				Date dataCriacao = new Date(calendar.getTime().getTime());
-				Date dataEdicao = new Date(calendar.getTime().getTime());
+				boolean valido = false;
+				Long id_categoria = null;
+				do {
+					try {
+						id_categoria = Long.valueOf(input("ID da categoria: (-1 se não houver)"));
+						if (id_categoria == -1l)
+							break;
 
-				tarefa.setTitulo(titulo);
-				tarefa.setPrazo(prazo);
-				tarefa.setPrioridade(prioridade);
-				tarefa.setDataCriacao(dataCriacao);
-				tarefa.setDataEdicao(dataEdicao);
-				tarefa.setId_Usuario(usuario.getId());
-				usuario.getTarefas().add(tarefa);
+						valido = new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria) != null;
 
-				if (new TarefaDAO(banco).adicionaTarefa(tarefa)) {
-					tarefa.setId((long) ++qtde_tarefas);
+					} catch (Exception exception) {
+						print("ID inválido.");
+					}
+				} while (!valido);
 
-					boolean valido = false;
-					Long id_categoria = null;
-					do {
-						try {
-							id_categoria = Long.valueOf(input("ID da categoria: (-1 se não houver)"));
-							if (id_categoria == -1l) {
-								tarefa.setId_Categoria(-1l); break;
-							}
-
-							tarefa.setId_Categoria(id_categoria);
-							Categoria categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria);
-							categoria.getId_Tarefas().add(tarefa.getId());
-
-							valido = true;
-							if (new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria) == null)
-								valido = false;
-
-						} catch (Exception exception) {
-							print("Categoria inválida.");
-						}
-					} while (!valido);
-
-					print("A tarefa foi adicionada com êxito.");
-
-				} else
-					print("A tarefa não foi adicionada.");
+				print(this.adicionaTarefa(titulo, prazo, prioridade, id_categoria, usuario));
 				break;
 
 			case "BID":
 				Long id = null;
 				try {
 					id = Long.valueOf(input("ID da tarefa:"));
-					
+
 				} catch (Exception exception) {
 					print("ID inválido.");
 					break;
 				}
 
-				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
-
-				if (tarefa != null)
-					print(tarefa.toString());
-				else
-					print("A tarefa não foi encontrada.");
+				print(this.buscaTarefaPorID(id));
 				break;
 
 			case "LS":
-				if(banco.getTarefas().size() == 0)
-					print("Nenhuma tarefa foi encontrada.");
-				else
-					print(new TarefaDAO(banco).listaTarefas());
+				print(this.listaTarefas());
 				break;
-				
+
 			case "AT":
 				id = null;
 				try {
 					id = Long.valueOf(input("ID da tarefa:"));
-					
+
 				} catch (Exception exception) {
 					print("ID inválido.");
 					break;
 				}
 
-				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
+				Tarefa tarefa = tarefaDAO.buscaTarefaPorId(id);
 
 				if (tarefa == null) {
-					print("Tarefa inválida."); break;
+					print("Tarefa inválida.");
+					break;
 				}
-				
-				if(tarefa.getId_Usuario() != usuario.getId()) {
-					print("Esta tarefa foi criada por outro usuário."); break;
+
+				if (tarefa.getId_Usuario() != usuario.getId()) {
+					print("Esta tarefa foi criada por outro usuário.");
+					break;
 				}
 
 				titulo = input("Título:", tarefa.getTitulo());
-				prazo = inputData("Prazo: dd/MM/yyyy", tarefa.getPrazo());
+				prazo = inputDate("Prazo: dd/MM/yyyy", tarefa.getPrazo());
 				prioridade = input("Prioridade:", tarefa.getPrioridade());
 
-				calendar = Calendar.getInstance();
-				dataEdicao = new Date(calendar.getTime().getTime());
+				valido = false;
+				id_categoria = null;
+				do {
+					try {
+						id_categoria = Long
+								.valueOf(input("ID da categoria: (-1 se não houver)", tarefa.getId_Categoria()));
+						if (id_categoria == -1l)
+							break;
 
-				tarefa.setTitulo(titulo);
-				tarefa.setPrazo(prazo);
-				tarefa.setPrioridade(prioridade);
-				tarefa.setDataEdicao(dataEdicao);
+						Categoria categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria);
+						valido = categoria != null;
 
-				if (new TarefaDAO(banco).atualizaTarefa(tarefa)) {
-					boolean valido = false;
-					Long id_categoria = null;
-					do {
-						try {
-							id_categoria = Long.valueOf(input("ID da categoria: (-1 se não houver)", tarefa.getId_Categoria()));
-							if (id_categoria == -1l)
-								break;
+					} catch (Exception exception) {
+						print("Categoria inválida.");
+					}
+				} while (!valido);
 
-							tarefa.setId_Categoria(id_categoria);
-							Categoria categoria = new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria);
-							categoria.getId_Tarefas().add(tarefa.getId());
-
-							valido = true;
-							if (new CategoriaDAO(banco).buscaCategoriaPorId(id_categoria) == null)
-								valido = false;
-
-						} catch (Exception exception) {
-							print("Categoria inválida.");
-						}
-					} while (!valido);
-					print("A tarefa foi atualizada com êxito.");
-
-				} else
-					print("A tarefa não foi atualizada.");
+				print(this.atualizaTarefa(tarefa, titulo, prazo, prioridade, id_categoria, usuario));
 				break;
 
 			case "DEL":
 				id = null;
 				try {
 					id = Long.valueOf(input("ID da tarefa:"));
-				
+
 				} catch (Exception exception) {
-					print("ID inválido."); break;
+					print("ID inválido.");
+					break;
 				}
 
-				tarefa = new TarefaDAO(banco).buscaTarefaPorId(id);
-				
-				if(tarefa == null) {
-					print("Tarefa inválida."); break;
+				tarefa = tarefaDAO.buscaTarefaPorId(id);
+
+				if (tarefa == null) {
+					print("Tarefa inválida.");
+					break;
 				}
-				
+
 				String string = input(tarefa.toString() + "Excluir esta tarefa? [Y/n]");
 
-				if(string.equals("") || string.toUpperCase().equals("Y"))
-					if(new TarefaDAO(banco).deletaTarefa(tarefa))
-						print("A tarefa foi deletada com êxito.");
-				else
-					print("A tarefa não foi deletada.");
+				this.deletaTarefa(string, tarefa);
 				break;
 
 			case "S":
@@ -201,6 +146,58 @@ public class GerenciadorTarefas {
 			default:
 				print("Opção inválida, Sherlock Holmes!");
 			}
+			qtde_tarefas = (long) banco.getTarefas().size();
 		}
+	}
+
+	public String adicionaTarefa(String titulo, Date prazo, String prioridade, Long id_categoria, Usuario usuario) {
+		Tarefa tarefa = new Tarefa();
+
+		Calendar calendar = Calendar.getInstance();
+		Date dataCriacao = new Date(calendar.getTime().getTime());
+		Date dataEdicao = new Date(calendar.getTime().getTime());
+
+		tarefa.setId(qtde_tarefas);
+		tarefa.setTitulo(titulo);
+		tarefa.setPrazo(prazo);
+		tarefa.setPrioridade(prioridade);
+		tarefa.setDataCriacao(dataCriacao);
+		tarefa.setDataEdicao(dataEdicao);
+		tarefa.setId_Categoria(id_categoria);
+		tarefa.setId_Usuario(usuario.getId());
+		usuario.getTarefas().add(tarefa);
+
+		return tarefaDAO.adicionaTarefa(tarefa) ? "A tarefa foi adicionada com êxito." : "A tarefa não foi adicionada.";
+	}
+
+	public String buscaTarefaPorID(Long id) {
+		Tarefa tarefa = tarefaDAO.buscaTarefaPorId(id);
+		return tarefa != null ? tarefa.toString() : "A tarefa não foi encontrada.";
+	}
+
+	public String listaTarefas() {
+		return banco.getTarefas().size() == 0 ? "Nenhuma tarefa foi encontrada." : tarefaDAO.listaTarefas();
+	}
+
+	public String atualizaTarefa(Tarefa tarefa, String titulo, Date prazo, String prioridade, Long id_categoria,
+			Usuario usuario) {
+		tarefa.setTitulo(titulo);
+		tarefa.setPrazo(prazo);
+		tarefa.setPrioridade(prioridade);
+
+		Calendar calendar = Calendar.getInstance();
+		Date dataEdicao = new Date(calendar.getTime().getTime());
+		tarefa.setDataEdicao(dataEdicao);
+
+		tarefa.setId_Categoria(id_categoria);
+
+		return tarefaDAO.atualizaTarefa(tarefa) ? "A tarefa foi atualizada com êxito." : "A tarefa não foi atualizada.";
+
+	}
+
+	public String deletaTarefa(String string, Tarefa tarefa) {
+		if (string.equals("") || string.toUpperCase().equals("Y"))
+			return tarefaDAO.deletaTarefa(tarefa) ? "A tarefa foi deletada com êxito." : "A tarefa não foi deletada.";
+		return "A tarefa não foi deletada.";
 	}
 }

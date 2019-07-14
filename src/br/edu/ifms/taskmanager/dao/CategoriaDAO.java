@@ -1,9 +1,9 @@
 package br.edu.ifms.taskmanager.dao;
 
-import java.util.ArrayList;
-
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Categoria;
+import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.dao.TarefaDAO;
 
 public class CategoriaDAO {
 	Banco banco;
@@ -14,34 +14,45 @@ public class CategoriaDAO {
 	}
 
 	public boolean adicionaCategoria(Categoria categoria) {
-		ArrayList<Categoria> categorias = banco.getCategorias();
-		
-		if(this.buscaCategoriaPorTitulo(categoria.getTitulo()) != null)
-			return false;
-		
-		return categorias.add(categoria);
+		boolean repetida = this.buscaCategoriaPorTitulo(categoria.getTitulo()) != null;
+		return categoria.getTitulo().equals("") || repetida ? false : this.banco.getCategorias().add(categoria);
+	}
+
+	public String listaCategorias() {
+		String string = new String();
+
+		for (Categoria categoria : this.banco.getCategorias())
+			string += categoria.toString();
+
+		return string;
 	}
 
 	public Categoria buscaCategoriaPorId(Long id) {
-		ArrayList<Categoria> categorias = banco.getCategorias();
-
-		for (Categoria categoria : categorias)
+		for (Categoria categoria : this.banco.getCategorias())
 			if (categoria.getId().equals(id))
 				return categoria;
 
 		return null;
 	}
 
-	public boolean atualizaCategoria(Categoria categoria) {
-		if(categoria.getTitulo().equals(""))
-			return false;
-		
-		ArrayList<Categoria> categorias = banco.getCategorias();
+	public Categoria buscaCategoriaPorTitulo(String titulo) {
+		for (Categoria categoria : this.banco.getCategorias())
+			if (categoria.getTitulo().equals(titulo))
+				return categoria;
 
-		for (Categoria categoriaBD : categorias) {
-			if (categoriaBD.getId().equals(categoria.getId())) {
-				categoriaBD.setTitulo(categoria.getTitulo());
-				categoriaBD.setId_Tarefas(categoria.getId_Tarefas());
+		return null;
+	}
+
+	public boolean atualizaCategoria(Categoria atualizada) {
+		if (atualizada.getTitulo().equals(""))
+			return false;
+
+		for (Categoria salva : this.banco.getCategorias()) {
+			if (salva.getId().equals(atualizada.getId())) {
+
+				salva.setTitulo(atualizada.getTitulo());
+				salva.setId_Tarefas(atualizada.getId_Tarefas());
+
 				return true;
 			}
 		}
@@ -50,29 +61,12 @@ public class CategoriaDAO {
 	}
 
 	public boolean deletaCategoria(Categoria categoria) {
-		ArrayList<Categoria> categorias = banco.getCategorias();
-
-		return categorias.remove(categoria);
+		if(this.banco.getCategorias().remove(categoria)) {
+			for(Long id_tarefa : categoria.getId_Tarefas()) {
+				new TarefaDAO(banco).buscaTarefaPorId(id_tarefa).setId_Categoria(-1l);
+			}
+			return true;
+		}
+		return false;
 	}
-
-	public Categoria buscaCategoriaPorTitulo(String titulo) {
-		ArrayList<Categoria> categorias = banco.getCategorias();
-		
-		for(Categoria categoria : categorias)
-			if(categoria.getTitulo().equals(titulo))
-				return categoria;
-		
-		return null;
-	}
-	
-	public String listaCategorias() {
-		ArrayList<Categoria> categorias = banco.getCategorias();
-		String string = new String();
-
-		for (Categoria categoria : categorias)
-			string += categoria.toString();
-
-		return string;
-	}
-	
 }

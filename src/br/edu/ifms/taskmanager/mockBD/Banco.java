@@ -2,6 +2,10 @@ package br.edu.ifms.taskmanager.mockBD;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,46 +24,20 @@ public class Banco {
 		this.categorias = new ArrayList<>();
 		this.tarefas = new ArrayList<>();
 		this.usuarios = new ArrayList<>();
-		
-		File fileCategorias = new File("src/br/edu/ifms/taskmanager/mockBD/Categorias.json");
-		File fileTarefas = new File("src/br/edu/ifms/taskmanager/mockBD/Tarefas.json");
-		File fileUsuarios = new File("src/br/edu/ifms/taskmanager/mockBD/Usuarios.json");
 
-		Gson gson = new Gson();
-		Scanner scanner = new Scanner(fileCategorias);
+		this.parseObjeto("src/br/edu/ifms/taskmanager/mockBD/Categorias.json", Categoria.class, this.categorias);
+		this.parseObjeto("src/br/edu/ifms/taskmanager/mockBD/Tarefas.json", Tarefa.class, this.tarefas);
+		this.parseObjeto("src/br/edu/ifms/taskmanager/mockBD/Usuarios.json", Usuario.class, this.usuarios);
 
-		while (scanner.hasNext()) {
-			String string = scanner.nextLine();
-			Categoria categoria = gson.fromJson(string, Categoria.class);
-			this.categorias.add(categoria);
-		}
+		this.categorias = (this.categorias == null) ? new ArrayList<>() : this.categorias;
+		this.tarefas = (this.tarefas == null) ? new ArrayList<>() : this.tarefas;
+		this.usuarios = (this.usuarios == null) ? new ArrayList<>() : this.usuarios;
+	}
 
-		scanner.close();
-		scanner = new Scanner(fileTarefas);
-
-		while (scanner.hasNext()) {
-			String string = scanner.nextLine();
-			Tarefa tarefa = gson.fromJson(string, Tarefa.class);
-			this.tarefas.add(tarefa);
-		}
-
-		scanner.close();
-		scanner = new Scanner(fileUsuarios);
-
-		while (scanner.hasNext()) {
-			String string = scanner.nextLine();
-			Usuario usuario = gson.fromJson(string, Usuario.class);
-			this.usuarios.add(usuario);
-		}
-
-		scanner.close();
-
-		if(this.categorias == null)
-			this.categorias = new ArrayList<>();
-		if(this.tarefas == null)
-			this.tarefas = new ArrayList<>();
-		if(this.usuarios == null)
-			this.usuarios = new ArrayList<>();	
+	public void close() throws IOException {
+		this.parseJSON("src/br/edu/ifms/taskmanager/mockBD/Categorias.json", Categoria.class, this.categorias);
+		this.parseJSON("src/br/edu/ifms/taskmanager/mockBD/Tarefas.json", Tarefa.class, this.tarefas);
+		this.parseJSON("src/br/edu/ifms/taskmanager/mockBD/Usuarios.json", Usuario.class, this.usuarios);
 	}
 
 	public Banco(ArrayList<Categoria> categorias, ArrayList<Tarefa> tarefas, ArrayList<Usuario> usuarios) {
@@ -91,6 +69,31 @@ public class Banco {
 
 	public void setUsuarios(ArrayList<Usuario> usuarios) {
 		this.usuarios = usuarios;
+	}
+
+	public <T> void parseObjeto(String string, Class<T> classOfT, ArrayList<T> arrayList) throws FileNotFoundException {
+		File file = new File(string);
+		Scanner scanner = new Scanner(file);
+		Gson gson = new Gson();
+		
+		while (scanner.hasNext()) {
+			String nextLine = scanner.nextLine();
+			T t = gson.fromJson(nextLine, classOfT);
+			arrayList.add(t);
+		}
+
+		scanner.close();
+	}
+
+	public <T> void parseJSON(String string, Class<T> classOfT, ArrayList<T> arrayList) throws IOException {
+		FileWriter fileWriter = new FileWriter(string);
+		PrintWriter printWriter = new PrintWriter(fileWriter);
+		Gson gson = new Gson();
+
+		for (T t : arrayList)
+			printWriter.printf("%s\n", gson.toJson(t));
+
+		fileWriter.close();
 	}
 
 }

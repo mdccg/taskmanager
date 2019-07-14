@@ -6,8 +6,9 @@
 	<artifactId>taskmanager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

@@ -9,14 +9,16 @@ import br.edu.ifms.taskmanager.model.Usuario;
 
 public class GerenciadorUsuarios {
 	Banco banco;
+	Long qtde_usuarios;
+	UsuarioDAO usuarioDAO;
 	
 	public GerenciadorUsuarios(Banco banco) {
 		this.banco = banco;
+		this.qtde_usuarios = (long) banco.getUsuarios().size();
+		this.usuarioDAO = new UsuarioDAO(banco);
 	}
 	
 	public void gerenciarUsuarios() {
-		Long qtde_usuarios = (long) banco.getUsuarios().size();
-		
 		while (true) {
 			String opcao = input(
 					"User Manager v1.33.7\n" +
@@ -36,16 +38,12 @@ public class GerenciadorUsuarios {
 				String nome = input("Nome:");
 				String senha = input("Senha:");
 				
+				usuario.setId(qtde_usuarios);
 				usuario.setEmail(email);
 				usuario.setNome(nome);
 				usuario.setSenha(senha);
 				
-				if(new UsuarioDAO(banco).adicionaUsuario(usuario)) {
-					usuario.setId((long) ++qtde_usuarios);
-					print("O usuário foi adicionado com êxito.");
-					
-				} else
-					print("O usuário não foi adicionado.");
+				print(this.adicionaUsuario(usuario));
 				break;
 				
 			case "BID":
@@ -57,19 +55,11 @@ public class GerenciadorUsuarios {
 					print("ID inválido."); break;
 				}
 				
-				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
-				
-				if(usuario != null)
-					print(usuario.toString());
-				else
-					print("O usuário não foi encontrado.");
+				print(this.buscaUsuarioPorID(id));
 				break;
 				
 			case "LS":
-				if(banco.getUsuarios().size() == 0)
-					print("Nenhum usuário foi encontrado.");
-				else
-					print(new UsuarioDAO(banco).listaUsuarios());
+				print(this.listaUsuarios());
 				break;
 				
 			case "AT":
@@ -81,7 +71,7 @@ public class GerenciadorUsuarios {
 					print("ID inválido."); break;
 				}
 				
-				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
+				usuario = usuarioDAO.buscaUsuarioPorId(id);
 				
 				if(usuario == null) {
 					print("Usuário inválido."); break;
@@ -91,14 +81,7 @@ public class GerenciadorUsuarios {
 				nome = input("Nome:", usuario.getNome());
 				senha = input("Senha:", usuario.getSenha());
 				
-				usuario.setEmail(email);
-				usuario.setNome(nome);
-				usuario.setSenha(senha);
-				
-				if(new UsuarioDAO(banco).atualizaUsuario(usuario))
-					print("O usuário foi atualizado com êxito.");
-				else
-					print("O usuário não foi atualizado.");
+				print(this.atualizaUsuario(usuario, email, nome, senha));
 				break;
 				
 			case "DEL":
@@ -110,19 +93,14 @@ public class GerenciadorUsuarios {
 					print("ID inválido."); break;
 				}
 				
-				usuario = new UsuarioDAO(banco).buscaUsuarioPorId(id);
+				usuario = usuarioDAO.buscaUsuarioPorId(id);
 				
 				if(usuario == null) {
 					print("Usuário inválido."); break;
 				}
 				
 				String string = input(usuario.toString() + "Excluir este usuário? [Y/n]");
-				
-				if(string.equals("") || string.toUpperCase().equals("Y"))
-					if(new UsuarioDAO(banco).deletaUsuario(usuario))
-						print("O usuário foi deletado com êxito.");
-				else
-					print("O usuário não foi deletado.");
+				print(this.deletaUsuario(usuario, string));
 				break;
 				
 			case "S":
@@ -131,6 +109,35 @@ public class GerenciadorUsuarios {
 			default:
 				print("Opção inválida, Sherlock Holmes!");
 			}
+			qtde_usuarios = (long) banco.getUsuarios().size();
 		}
+	}
+	
+	public String adicionaUsuario(Usuario usuario) {
+		return usuarioDAO.adicionaUsuario(usuario) ? "O usuário foi adicionado com êxito." : "O usuário não foi adicionado.";
+	}
+	
+	public String buscaUsuarioPorID(Long id) {
+		Usuario usuario = usuarioDAO.buscaUsuarioPorId(id);
+		return usuario != null ? usuario.toString() : "O usuário não foi encontrado.";
+	}
+	
+	public String listaUsuarios() {
+		return banco.getUsuarios().size() != 0 ? usuarioDAO.listaUsuarios() : "Nenhum usuário foi encontrado.";
+	}
+	
+	public String atualizaUsuario(Usuario usuario, String email, String nome, String senha) {
+		usuario.setEmail(email);
+		usuario.setNome(nome);
+		usuario.setSenha(senha);
+		
+		return usuarioDAO.atualizaUsuario(usuario) ? "O usuário foi atualizado com êxito." : "O usuário não foi atualizado.";
+	}
+	
+	public String deletaUsuario(Usuario usuario, String string) {
+		if(string.equals("") || string.toUpperCase().equals("Y"))
+			if(new UsuarioDAO(banco).deletaUsuario(usuario))
+				return "O usuário foi deletado com êxito.";
+		return "O usuário não foi deletado.";
 	}
 }

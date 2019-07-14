@@ -44,11 +44,8 @@ public class Categoria {
 
 	@Override
 	public String toString() {
-		return "ID: " + id + "\n" +
-				"Título: " + titulo + "\n" +
-				"ID da(s) tarefa(s): " + id_tarefas + "\n" +
-				"\n";
-	
+		return "ID: " + id + "\n" + "Título: " + titulo + "\n" + "ID da(s) tarefa(s): " + id_tarefas + "\n" + "\n";
+
 	}
 
 	@Override
@@ -87,5 +84,5 @@ public class Categoria {
 			return false;
 		return true;
 	}
-	
+
 }

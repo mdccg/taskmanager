@@ -1,9 +1,9 @@
 package br.edu.ifms.taskmanager.dao;
 
-import java.util.ArrayList;
-
 import br.edu.ifms.taskmanager.mockBD.Banco;
+import br.edu.ifms.taskmanager.model.Categoria;
 import br.edu.ifms.taskmanager.model.Tarefa;
+import br.edu.ifms.taskmanager.dao.CategoriaDAO;
 
 public class TarefaDAO {
 	Banco banco;
@@ -14,39 +14,49 @@ public class TarefaDAO {
 	}
 
 	public boolean adicionaTarefa(Tarefa tarefa) {
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
-		
-		if(this.buscaTarefaPorTitulo(tarefa.getTitulo()) != null)
-			return false;
-		
-		return tarefas.add(tarefa);
+		boolean repetida = this.buscaTarefaPorTitulo(tarefa.getTitulo()) != null;
+		return tarefa.getTitulo().equals("") || tarefa.getPrioridade().equals("") || repetida ? false
+				: this.banco.getTarefas().add(tarefa);
+	}
+
+	public String listaTarefas() {
+		String string = new String();
+
+		for (Tarefa tarefa : this.banco.getTarefas())
+			string += tarefa.toString();
+
+		return string;
 	}
 
 	public Tarefa buscaTarefaPorId(Long id) {
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
-
-		for (Tarefa tarefa : tarefas)
+		for (Tarefa tarefa : this.banco.getTarefas())
 			if (tarefa.getId().equals(id))
 				return tarefa;
 
 		return null;
 	}
 
-	public boolean atualizaTarefa(Tarefa tarefa) {
-		if(tarefa.getTitulo().equals("") ||
-				tarefa.getPrazo().equals(null) ||
-				tarefa.getPrioridade().equals(""))
-			return false;
-		
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
+	public Tarefa buscaTarefaPorTitulo(String titulo) {
+		for (Tarefa tarefa : this.banco.getTarefas())
+			if (tarefa.getTitulo().equals(titulo))
+				return tarefa;
 
-		for (Tarefa tarefaBD : tarefas) {
-			if (tarefaBD.getId().equals(tarefa.getId())) {
-				tarefaBD.setTitulo(tarefa.getTitulo());
-				tarefaBD.setPrazo(tarefa.getPrazo());
-				tarefaBD.setPrioridade(tarefa.getPrioridade());
-				tarefaBD.setDataEdicao(tarefa.getDataEdicao());
-				tarefaBD.setId_Categoria(tarefa.getId_Categoria());
+		return null;
+	}
+
+	public boolean atualizaTarefa(Tarefa atualizada) {
+		if (atualizada.getTitulo().equals("") || atualizada.getPrioridade().equals(""))
+			return false;
+
+		for (Tarefa salva : this.banco.getTarefas()) {
+			if (salva.getId().equals(atualizada.getId())) {
+
+				salva.setTitulo(atualizada.getTitulo());
+				salva.setPrazo(atualizada.getPrazo());
+				salva.setPrioridade(atualizada.getPrioridade());
+				salva.setDataEdicao(atualizada.getDataEdicao());
+				salva.setId_Categoria(atualizada.getId_Categoria());
+
 				return true;
 			}
 		}
@@ -55,28 +65,14 @@ public class TarefaDAO {
 	}
 
 	public boolean deletaTarefa(Tarefa tarefa) {
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
-
-		return tarefas.remove(tarefa);
-	}
-
-	public Tarefa buscaTarefaPorTitulo(String titulo) {
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
-
-		for(Tarefa tarefa : tarefas)
-			if(tarefa.getTitulo().equals(titulo))
-				return tarefa;
-		
-		return null;
-	}
-	
-	public String listaTarefas() {
-		ArrayList<Tarefa> tarefas = banco.getTarefas();
-		String string = new String();
-
-		for (Tarefa tarefa : tarefas)
-			string += tarefa.toString();
-
-		return string;
+		if(this.banco.getTarefas().remove(tarefa)) {
+			if(tarefa.getId_Categoria() != -1l) {
+				Categoria categoria = new CategoriaDAO(banco).buscaCategoriaPorId(tarefa.getId_Categoria());
+				if(categoria != null)
+					categoria.getId_Tarefas().remove(tarefa.getId());
+				return true;
+			}
+		}
+		return false;
 	}
 }

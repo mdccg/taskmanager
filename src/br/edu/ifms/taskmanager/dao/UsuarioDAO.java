@@ -1,7 +1,5 @@
 package br.edu.ifms.taskmanager.dao;
 
-import java.util.ArrayList;
-
 import br.edu.ifms.taskmanager.mockBD.Banco;
 import br.edu.ifms.taskmanager.model.Usuario;
 
@@ -14,37 +12,46 @@ public class UsuarioDAO {
 	}
 
 	public boolean adicionaUsuario(Usuario usuario) {
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-		
-		if(this.buscaUsuarioPorEmail(usuario.getEmail()) != null)
-			return false;
-		
-		return usuarios.add(usuario);
+		boolean repetido = this.buscaUsuarioPorEmail(usuario.getEmail()) != null;
+		return repetido ? false : this.banco.getUsuarios().add(usuario);
+	}
+
+	public String listaUsuarios() {
+		String string = new String();
+
+		for (Usuario usuario : this.banco.getUsuarios())
+			string += usuario.toString();
+
+		return string;
 	}
 
 	public Usuario buscaUsuarioPorId(Long id) {
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-
-		for (Usuario usuario : usuarios)
+		for (Usuario usuario : this.banco.getUsuarios())
 			if (usuario.getId().equals(id))
 				return usuario;
 
 		return null;
 	}
-	
-	public boolean atualizaUsuario(Usuario usuario) {
-		if(usuario.getNome().equals("") ||
-				usuario.getEmail().equals("") ||
-				usuario.getSenha().equals(""))
+
+	public Usuario buscaUsuarioPorEmail(String email) {
+		for (Usuario usuario : this.banco.getUsuarios())
+			if (usuario.getEmail().equals(email))
+				return usuario;
+
+		return null;
+	}
+
+	public boolean atualizaUsuario(Usuario atualizado) {
+		if (atualizado.getNome().equals("") || atualizado.getEmail().equals("") || atualizado.getSenha().equals(""))
 			return false;
-		
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-		
-		for (Usuario usuarioBD : usuarios) {
-			if (usuarioBD.getId().equals(usuario.getId())) {
-				usuarioBD.setEmail(usuario.getEmail());
-				usuarioBD.setNome(usuario.getNome());
-				usuarioBD.setSenha(usuario.getSenha());
+
+		for (Usuario salvo : this.banco.getUsuarios()) {
+			if (salvo.getId().equals(atualizado.getId())) {
+
+				salvo.setEmail(atualizado.getEmail());
+				salvo.setNome(atualizado.getNome());
+				salvo.setSenha(atualizado.getSenha());
+
 				return true;
 			}
 		}
@@ -53,29 +60,7 @@ public class UsuarioDAO {
 	}
 
 	public boolean deletaUsuario(Usuario usuario) {
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-
-		return usuarios.remove(usuario);
-	}
-	
-	public Usuario buscaUsuarioPorEmail(String email) {
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-		
-		for (Usuario usuario : usuarios)
-			if (usuario.getEmail().equals(email))
-				return usuario;
-
-		return null;
-	}
-	
-	public String listaUsuarios() {
-		ArrayList<Usuario> usuarios = banco.getUsuarios();
-		String string = new String();
-		
-		for(Usuario usuario : usuarios)
-			string += usuario.toString();
-		
-		return string;
+		return this.banco.getUsuarios().remove(usuario);
 	}
 
 }

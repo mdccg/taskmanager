@@ -87,14 +87,15 @@ public class GerenciadorCategorias {
 			default:
 				print("Opção inválida, Sherlock Holmes!");
 			}
-
+			
 			qtde_categorias = (long) banco.getCategorias().size();
-			System.out.println(qtde_categorias);
 		}
 	}
 
 	public String adicionaCategoria(String titulo) {
 		Categoria categoria = new Categoria();
+		
+		categoria.setId(qtde_categorias);
 		categoria.setTitulo(titulo);
 
 		return categoriaDAO.adicionaCategoria(categoria) ? "A categoria foi adicionada com êxito."
@@ -104,7 +105,10 @@ public class GerenciadorCategorias {
 	public String buscaCategoriaPorId(Long id) {
 		Categoria categoria = categoriaDAO.buscaCategoriaPorId(id);
 
-		return categoria != null ? categoria.toString() : "A categoria não foi encontrada.";
+		if (categoria != null)
+			return categoria.toString();
+		else
+			return "A categoria não foi encontrada.";
 	}
 
 	public String listaCategorias() {
