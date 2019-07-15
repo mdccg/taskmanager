@@ -70,6 +70,7 @@ public class GerenciadorUsuariosTeste {
 				gerenciadorUsuarios.atualizaUsuario(usuario, email, nome, senha));
 	}
 
+	@Test
 	public void testaDeletarUsuarioPeloGerenciador() {
 		usuarioDAO.adicionaUsuario(usuario);
 
